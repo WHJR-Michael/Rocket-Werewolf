@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+  <script src="p5.js"></script>
+  <script src="p5.sound.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="utf-8">
+  <script src="p5.play.js"></script>
+  <script>
+    /* JavaScipt Starts Here */
+
+    /* Variable Declaration */
+    var gameState = "play";
+    var timeVar = 0;
+    var Strikes = 0;
+    var grandmaWerewolf, wereImg;
+    var squirrelImg, squirrels;
+    var font;
+    
+
+    function preload(){
+      wereImg = loadImage("grandmaWerewolf.png");
+      squirrelImg = loadImage("squirrel.png");
+      font = loadFont("Thintel.ttf");
+    }
+  
+    function setup() {
+      /* Creates the Canvas */
+      createCanvas(800, 800);
+
+      /* Creates Grandma Werewolf */ 
+      grandmaWerewolf = createSprite(700, 200, 1, 1);
+      grandmaWerewolf.addImage(wereImg);
+      grandmaWerewolf.scale = 3;
+
+      /* Creates Squirrel Group */
+      squirrels = createGroup();
+
+    }
+  
+    function draw() {
+      /* Creates the Background */
+      background(3, 3, 38);
+
+      /* Draws the Sprites */
+      drawSprites();
+
+      /* Creates Stars */
+      createStars();
+
+      if (gameState === "play"){
+        /* Makes Grandma Werewolf Move with Your Mouse */ 
+        grandmaWerewolf.y = mouseY + 40;
+        grandmaWerewolf.x = mouseX;
+
+
+        /* Creates Squirrels */
+        createSquirrels()
+
+        /* Keeps Time */
+        if (frameCount % 60 === 0){
+          timeVar++;
+        }
+        textFont(font, 50);
+        text("Time: " + timeVar, 50, 50);
+
+        /* Strikes */
+        if (Strikes >= 2){
+          fill("red");
+        } else {
+          fill("grey");
+        }
+        rectMode(CENTER);
+        rect(740, 20, 20, 20)
+
+        if (Strikes >= 3){
+          fill("red");
+        } else {
+          fill("grey");
+        }
+        rectMode(CENTER);
+        rect(780, 20, 20, 20)
+
+        if (Strikes >= 1){
+         fill("red");
+        } else {
+         fill("grey");
+        }
+        rectMode(CENTER);
+        rect(700, 20, 20, 20)
+
+        /* Lose Condition */
+        if (Strikes === 3){
+          gameState = "end";
+          grandmaWerewolf.velocityY = 3;
+        }
+      } else {
+        textFont(font, 50);
+        textAlign(CENTER);
+        text("You Lose, Press Space to Restart\nYour Time: "+timeVar, 400, 400);
+        if (keyDown("space")){
+          gameState = "play";
+          Strikes=0;
+          squirrels.destroyEach();
+          timeVar=0;
+        }
+      }
+      
+      
+      
+      
+
+      
+      
+      
+      
+
+
+      
+    }
+
+
+    /* Function Definition */
+    function createStars(){
+      var star = createSprite(0, Math.round(random(800, 0)), 3, 3);
+      star.shapeColor = rgb(255, 255, 255);
+      star.velocityX = 5;
+      star.lifetime = 160;
+      grandmaWerewolf.depth = star.depth+500
+    }
+
+    function createSquirrels(){
+      if(frameCount % Math.round(random(1, 30)) === 0){
+        var squirrel = createSprite(0, Math.round(random(800, 0)), 1, 1);
+        squirrel.addImage(squirrelImg);
+        
+        squirrel.scale = 2;
+        squirrels.add(squirrel);      
+        squirrels.setVelocityXEach((timeVar/10)-(Strikes)+5);
+      }
+      for (i = 0; squirrels.get(i) != null; i++){
+        if(grandmaWerewolf.isTouching(squirrels.get(i))){
+          squirrels.get(i).destroy();
+        } else if(squirrels.get(i).x>800){
+          squirrels.get(i).destroy();
+          Strikes++
+        }
+      }
+      
+      
+    }
+
+    /* JavaScript Ends Here */
+  </script>
+  </head>
+</html>
